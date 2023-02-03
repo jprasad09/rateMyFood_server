@@ -16,7 +16,7 @@ const app = express()
 
 // middleware
 const corsOptions ={
-  origin:'http://localhost:3000', 
+  origin:'https://ratemyfood.onrender.com', 
   credentials:true,            //access-control-allow-credentials:true
   optionSuccessStatus:200
 }
