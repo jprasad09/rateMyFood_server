@@ -17,12 +17,31 @@ const getReview = async (req, res) => {
   }
 
   const review = await Review.findById(id)
+    .populate({ path: 'user_id', select: ['username', 'name'] })
 
   if (!review) {
     return res.status(404).json({error: 'No such review'})
   }
 
   res.status(200).json(review)
+}
+
+// get reviews by restaurant ID
+const getReviewsByRestaurantId = async (req, res) => {
+  const { id } = req.params
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({error: 'No such reviews'})
+  }
+
+  const reviews = await Review.find({ restaurant_id: id })
+    .populate({ path: 'user_id', select: ['username', 'name'] })
+
+  if (!reviews) {
+    return res.status(404).json({error: 'No such reviews'})
+  }
+
+  res.status(200).json(reviews)
 }
 
 // create a new review
@@ -95,6 +114,7 @@ const updateReview = async (req, res) => {
 module.exports = {
   getReviews,
   getReview,
+  getReviewsByRestaurantId,
   createReview,
   deleteReview,
   updateReview
