@@ -15,6 +15,14 @@ const authRoutes = require('./routes/auth')
 const app = express()
 
 // middleware
+app.use((req, res, next) => {
+    res.set({
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "*",
+    });
+
+    next();
+});
 const corsOptions ={
   origin:'https://ratemyfood.onrender.com', 
   credentials:true,            //access-control-allow-credentials:true
