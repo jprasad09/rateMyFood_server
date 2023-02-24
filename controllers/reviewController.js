@@ -17,7 +17,7 @@ const getReview = async (req, res) => {
   }
 
   const review = await Review.findById(id)
-    .populate({ path: 'user_id', select: ['username', 'name'] })
+    .populate({ path: 'user_id', select: ['username', 'name', 'profileImage'] })
 
   if (!review) {
     return res.status(404).json({error: 'No such review'})
@@ -35,7 +35,7 @@ const getReviewsByRestaurantId = async (req, res) => {
   }
 
   const reviews = await Review.find({ restaurant_id: id })
-    .populate({ path: 'user_id', select: ['username', 'name'] })
+    .populate({ path: 'user_id', select: ['username', 'name', 'profileImage'] })
 
   if (!reviews) {
     return res.status(404).json({error: 'No such reviews'})
