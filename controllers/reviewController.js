@@ -1,4 +1,5 @@
 const Review = require('../models/reviewModel')
+const Restaurant = require('../models/restaurantModel')
 const mongoose = require('mongoose')
 
 // get all reviews
@@ -18,6 +19,7 @@ const getReview = async (req, res) => {
 
   const review = await Review.findById(id)
     .populate({ path: 'user_id', select: ['username', 'name', 'profileImage'] })
+
 
   if (!review) {
     return res.status(404).json({error: 'No such review'})
@@ -44,13 +46,10 @@ const getReviewsByRestaurantId = async (req, res) => {
   res.status(200).json(reviews)
 }
 
+
 // create a new review
 const createReview = async (req, res) => {
-  const {user_id, restaurant_id, review, rating} = req.body
-  const images = []
-  for (let key in req.files){
-    images.push(req.files[key].path)
-  }
+  const {user_id, restaurant_id, review, images, rating} = req.body
 
   let emptyFields = []
 
@@ -73,6 +72,17 @@ const createReview = async (req, res) => {
   // add to the database
   try {
     const reviewRes = await Review.create({ user_id, restaurant_id, review, images, rating })
+
+    // Calculate the new average rating for the restaurant
+    const restaurant = await Restaurant.findOne({ _id: restaurant_id })
+    const reviews = await Review.find({ restaurant_id })
+    const sumRatings = reviews.reduce((total, review) => total + review.rating, 0)
+    const numReviews = reviews.length
+    const average_rating = sumRatings / numReviews
+
+    // Update the restaurant document with the new average rating
+    await Restaurant.findOneAndUpdate({ _id: restaurant_id }, { average_rating })
+    
     res.status(200).json(reviewRes)
   } catch (error) {
     res.status(400).json({ error: error.message })
