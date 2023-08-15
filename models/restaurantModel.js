@@ -69,7 +69,7 @@ restaurantSchema.post(['save', 'findOneAndUpdate', 'findOneAndDelete'], async fu
     const reviews = await Review.find({ restaurant_id });
     const numReviews = reviews.length;
     const sumRatings = reviews.reduce((acc, review) => acc + review.rating, 0);
-    const avgRating = sumRatings / numReviews || 0;
+    const avgRating = (sumRatings / numReviews || 0).toFixed(1);
     await doc.updateOne({ average_rating: avgRating });
     next();
   } catch (error) {
